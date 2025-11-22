@@ -1,19 +1,38 @@
+import discord
+from discord.ext import commands
+import random
+description = """An example bot to showcase the discord.ext.commands extension
+module.
 
-meme_dict = {
-    "CRINGE": "Algo excepcionalmente raro o embarazoso",
-    "LOL": "Una respuesta común a algo gracioso",
-    "ROFL": "Una respuesta a una broma", 
-    "SHEESH": "ligera desaprobación", 
-    "CREEPY": "aterrador, siniestro", 
-    "AGGRO": "ponerse agresivo/enojado",
-    "DE CHILL": "una expresión para reflejar tranquilidad"
-}
+There are a number of utility commands being showcased here."""
 
-while True:
-    word = input("Escribe una palabra que no entiendas (¡con mayúsculas! o escribe SALIR para terminar): ")
-    if word == "SALIR":
-        break
-    elif word in meme_dict:
-        print(meme_dict[word])
+intents = discord.Intents.default()
+intents.message_content = True
+intents.message_content = True
+
+bot = commands.Bot(command_prefix='!', description=description, intents=intents)
+
+@bot.event
+async def on_ready():
+    assert bot.user is not None
+
+    print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    print('------')
+
+@bot.command()
+async def joined(ctx, member: discord.Member):
+    """Says when a member joined."""
+    # Joined at can be None in very bizarre cases so just handle that as well
+    if member.joined_at is None:
+        await ctx.send(f'{member} has no join date.')
     else:
-        print("Palabra no encontrada")
+        await ctx.send(f'{member} joined {discord.utils.format_dt(member.joined_at)}')
+
+@bot.command()
+async def hello(ctx):
+    await ctx.send(f"Hola, soy un bot{bot.user}!")
+
+@bot.command()
+async def ping(ctx):
+    await ctx.send("Pong!")
+bot.run("TOKEN")
